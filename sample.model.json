@@ -33,6 +33,19 @@
                 "name": "startDate",
                 "required": true,
                 "type": "Date"
+            },
+            {
+                "name": "Operation1",
+                "args": [
+                    {
+                        "name": "Parameter1",
+                        "required": true
+                    },
+                    {
+                        "name": "Parameter2",
+                        "required": true
+                    }
+                ]
             }
         ]
     },
