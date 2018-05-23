@@ -1,0 +1,61 @@
+[
+    {
+        "name": "User",
+        "fields": [
+            {
+                "name": "userName",
+                "required": true
+            },
+            {
+                "name": "password",
+                "required": true
+            },
+            {
+                "name": "isAdmin",
+                "type": "Boolean",
+                "derived": true
+            }
+        ]
+    },
+    {
+        "name": "AdminRole",
+        "fields": [
+            {
+                "name": "active",
+                "required": true
+            },
+            {
+                "name": "multiple",
+                "type": "Boolean",
+                "derived": true
+            },
+            {
+                "name": "startDate",
+                "required": true,
+                "type": "Date"
+            }
+        ]
+    },
+    {
+        "name": "StudentRole",
+        "fields": [
+            {
+                "name": "Attribute1"
+            },
+            {
+                "name": "active",
+                "required": true
+            },
+            {
+                "name": "multiple",
+                "type": "Boolean",
+                "derived": true
+            },
+            {
+                "name": "startDate",
+                "required": true,
+                "type": "Date"
+            }
+        ]
+    }
+]
