@@ -40,7 +40,7 @@ function multiplicity(attr) {
 function Relation(opposite) {
     var attr = opposite._parent.end1 === opposite ? opposite._parent.end2 : opposite._parent.end1;
     if (attr.name) {
-        if(attr.name == "rightOne") debugger;
+        // if(attr.name == "rightOne") debugger;
         var own = multiplicity(attr);
         var opp = multiplicity(opposite);
 
@@ -111,12 +111,35 @@ function Entity(elem) {
 }
 
 var links = mdjson.Repository.select("@UMLAssociationClassLink");
-var diagrams = mdjson.Repository.select("@UMLDiagram");
-var packages = mdjson.Repository.select("@UMLPackage");
-var code = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "Node");
+var code = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "node");
 
+var schemas = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "schema");
+
+var mutations = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "mutation");
+
+var queries = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "query");
+
+// UMLOperation
+
+
+
+//UMLStereotype
+
+/*
+"Tag": {
+    "kind": "class",
+    "super": "Model",
+    "attributes": [
+        { "name": "kind",      "kind": "enum", "type": "TagKind", "visible": true },
+        { "name": "value",     "kind": "prim", "type": "String",  "visible": true, "multiline": true },
+        { "name": "reference", "kind": "ref",  "type": "Model",   "visible": true },
+        { "name": "checked",   "kind": "prim", "type": "Boolean", "visible": true },
+        { "name": "number",    "kind": "prim", "type": "Integer", "visible": true }
+    ]
+},
+*/
 
 debugger;
 fs.writeFileSync('./sample.model.json', JSON.stringify(code.map(ent => Entity(ent))));
-fs.writeFileSync('./sample.pakcakges.json', JSON.stringify(code.map(ent => Entity(ent))));
+fs.writeFileSync('./sample.packages.json', JSON.stringify(code.map(ent => Entity(ent))));
 
