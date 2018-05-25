@@ -1,1 +1,154 @@
-[{"name":"AdminRole","fields":[{"name":"active","required":true},{"name":"multiple","type":"Boolean","derived":true},{"name":"startDate","required":true,"type":"Date"},{"name":"findSomething","args":[{"name":"Parameter1","required":true},{"name":"Parameter2","required":true}]}]},{"name":"User","fields":[{"name":"userName"},{"name":"password","required":true},{"name":"roles","relation":{"belongsToMany":"UserRoles#"}}]},{"name":"Course","fields":[{"name":"name"},{"name":"questions","relation":{"hasMany":"Question#"}}]},{"name":"Question","fields":[{"name":"name","description":"вопрос","required":true},{"name":"number","description":"порядковый номер","required":true,"type":"Int"},{"name":"course","relation":{"belongsTo":"Course#"}},{"name":"answers","relation":{"belongsToMany":"Answer#","using":"QA"}},{"name":"rightOne","description":"правильный ответ","derived":true,"relation":{"hasOne":"Answer#"}}]},{"name":"QA","description":"таблица связки вопросы и ответы","fields":[]},{"name":"Answer","description":"всевозможные ответы","fields":[{"name":"name","description":"ответ","required":true},{"name":"number","description":"порядковый номер","required":true,"type":"Int"},{"name":"question","relation":{"belongsToMany":"Question#","using":"QA"}}]},{"name":"StudentRole","fields":[{"name":"Cool"},{"name":"active","required":true},{"name":"multiple","type":"Boolean","derived":true},{"name":"startDate","required":true,"type":"Date"}]}]
+[
+    {
+        "name": "AdminRole",
+        "fields": [
+            {
+                "name": "active",
+                "required": true
+            },
+            {
+                "name": "multiple",
+                "type": "Boolean",
+                "derived": true
+            },
+            {
+                "name": "startDate",
+                "required": true,
+                "type": "Date"
+            },
+            {
+                "name": "findSomething",
+                "args": [
+                    {
+                        "name": "Parameter1",
+                        "required": true
+                    },
+                    {
+                        "name": "Parameter2",
+                        "required": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "User",
+        "fields": [
+            {
+                "name": "userName"
+            },
+            {
+                "name": "password",
+                "required": true
+            },
+            {
+                "name": "roles",
+                "relation": {
+                    "belongsToMany": "UserRoles#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "Course",
+        "fields": [
+            {
+                "name": "name"
+            },
+            {
+                "name": "questions",
+                "relation": {
+                    "hasMany": "Question#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "Question",
+        "fields": [
+            {
+                "name": "name",
+                "description": "вопрос",
+                "required": true
+            },
+            {
+                "name": "number",
+                "description": "порядковый номер",
+                "required": true,
+                "type": "Int"
+            },
+            {
+                "name": "course",
+                "relation": {
+                    "belongsTo": "Course#"
+                }
+            },
+            {
+                "name": "answers",
+                "relation": {
+                    "belongsToMany": "Answer#",
+                    "using": "QA"
+                }
+            },
+            {
+                "name": "rightOne",
+                "description": "правильный ответ",
+                "derived": true,
+                "relation": {
+                    "hasOne": "Answer#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "QA",
+        "description": "таблица связки вопросы и ответы",
+        "fields": []
+    },
+    {
+        "name": "Answer",
+        "description": "всевозможные ответы",
+        "fields": [
+            {
+                "name": "name",
+                "description": "ответ",
+                "required": true
+            },
+            {
+                "name": "number",
+                "description": "порядковый номер",
+                "required": true,
+                "type": "Int"
+            },
+            {
+                "name": "question",
+                "relation": {
+                    "belongsToMany": "Question#",
+                    "using": "QA"
+                }
+            }
+        ]
+    },
+    {
+        "name": "StudentRole",
+        "fields": [
+            {
+                "name": "Cool"
+            },
+            {
+                "name": "active",
+                "required": true
+            },
+            {
+                "name": "multiple",
+                "type": "Boolean",
+                "derived": true
+            },
+            {
+                "name": "startDate",
+                "required": true,
+                "type": "Date"
+            }
+        ]
+    }
+]

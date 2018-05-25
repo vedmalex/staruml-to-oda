@@ -110,18 +110,86 @@ function Entity(elem) {
     }
 }
 
+function InputType(elem) {
+    return {
+        name: elem.name,
+        description: elem.documentation || undefined,
+        fields: [
+            ...Fields(elem),
+        ],
+    }
+}
+
+function InputType(elem) {
+    return {
+        name: elem.name,
+        description: elem.documentation || undefined,
+        fields: [
+            ...Fields(elem),
+        ],
+    }
+}
+
+
+const { Validator, Reopistory } = mdjson;
+
+const rules = [
+    {
+        id: "ODA001",
+        message: "Name of query must be unique",
+        appliesTo: ["UMLOperation"],
+        exceptions: [],
+        constraint: function (elem) {
+            if(elem.stereotype.name == 'query'){
+                const found = Repository.findAll(i => elem!==i && elem.name === i.elem.name && i.stereotype && i.stereotype.name == "query");
+                return found.length === 0;
+            }
+            return true;
+        }
+    },
+    {
+        id: "ODA002",
+        message: "Name of mutation must be unique",
+        appliesTo: ["UMLOperation"],
+        exceptions: [],
+        constraint: function (elem) {
+            if(elem.stereotype.name == 'mutation') {
+                const found = Repository.findAll(i => elem!==i && elem.name === i.elem.name && i.stereotype && i.stereotype.name == "mutation");
+                return found.length === 0;
+            }
+            return true;
+        }
+    },
+    // return value for mutations must be entity/node/payload 
+    // associationEnds must have multiplicity
+    // navigable not persistend end must be derived in code
+    // типы данных должны быть выбраны из соответствующих профилей
+    // схема должна содержать хотя бы одну ссылку на сущность
+    //
+
+];
+
+Validator.addRules(rules);
+
+var failed = Validator.validate();
+console.log(failed);
+//links
 var links = mdjson.Repository.select("@UMLAssociationClassLink");
-var code = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "node");
-
+//
+var entities = mdjson.Repository.findAll(i => i.stereotype && (i.stereotype.name == "node" || i.stereotype.name == "entity")).map(Entity);
+//
+var inputTypes = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "input").map(InputType);;
+//
 var schemas = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "schema");
-
-var mutations = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "mutation");
-
+//
+var mutations = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "mutation")
+//
 var queries = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "query");
-
+//
+var enums = mdjson.Repository.findAll(i => i.stereotype && (i.stereotype.name == "enum" || i.stereotype.name == "enumeration"));
 // UMLOperation
 
-
+//RULE: все операции и запросы должны быть уникальны по названию во всех моделе
 
 //UMLStereotype
 
@@ -140,6 +208,6 @@ var queries = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name =
 */
 
 debugger;
-fs.writeFileSync('./sample.model.json', JSON.stringify(code.map(ent => Entity(ent))));
-fs.writeFileSync('./sample.packages.json', JSON.stringify(code.map(ent => Entity(ent))));
+fs.writeFileSync('./sample.model.json', JSON.stringify(entities));
+// fs.writeFileSync('./sample.packages.json', JSON.stringify(code.map(ent => Entity(ent))));
 
