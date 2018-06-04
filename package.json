@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "fte.js": "^0.6.0",
     "metadata-json-oda": "latest"
   }
 }

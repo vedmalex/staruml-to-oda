@@ -2,12 +2,22 @@ var fs = require('fs');
 
 var mdjson = require("metadata-json-oda");
 
+const { Validator, Repository } = mdjson;
+
 var root = mdjson.loadFromFile("courseware.mdj");
+
+
+
+function extractTypeName(type) {
+    return typeof type === 'string' ?
+        (type.toLowerCase() === 'string' ? undefined : type)
+        : (typeof type.name === 'string' ? type.name : undefined);
+}
 
 function returnType(op) {
     var item = (op.parameters || []).find(p => p.direction === 'return');
     if (item) {
-        return item.type.name === 'String' ? undefined : item.type.name;
+        return extractTypeName(item.type)
     }
 }
 
@@ -19,7 +29,7 @@ function Operation(attr) {
             .filter(p => p.direction === 'in')
             .map(p => ({
                 name: p.name,
-                type: p.type && p.type.name === 'String' ? undefined : p.type && p.type.name || undefined,
+                type: extractTypeName(p.type),
                 required: p.stereotype && p.stereotype.name == 'required' || undefined,
                 defaultValue: p.defaultValue || undefined,
             })),
@@ -28,7 +38,7 @@ function Operation(attr) {
 
 function Operations(elem) {
     return [
-        ...elem.operations,
+        ...(elem.operations || []),
         ...elem.getInheritedOperations(),
     ].map(Operation);
 }
@@ -86,15 +96,15 @@ function Field(attr) {
         required: attr.stereotype && attr.stereotype.name == 'required' || undefined,
         type: attr.type && attr.type.name === 'String' ? undefined : attr.type && attr.type.name || undefined,
         derived: attr.isDerived || undefined,
-        unique: attr.isID || undefined,
+        identity: attr.isID || attr.stereotype && attr.stereotype.name == 'identity' || undefined,
         indexed: attr.isID || undefined, // придумать
     }
 }
 
 function Fields(elem) {
     return [
-        ...elem.attributes,
-        ...elem.getInheritedAttributes(),
+        ...(elem.attributes || []),
+        ...(elem.getInheritedAttributes && elem.getInheritedAttributes() || []),
     ].map(Field);
 }
 
@@ -131,42 +141,107 @@ function InputType(elem) {
 }
 
 
-const { Validator, Reopistory } = mdjson;
 
 const rules = [
     {
-        id: "ODA001",
+        id: "ODA00100",
         message: "Name of query must be unique",
         appliesTo: ["UMLOperation"],
         exceptions: [],
         constraint: function (elem) {
-            if(elem.stereotype.name == 'query'){
-                const found = Repository.findAll(i => elem!==i && elem.name === i.elem.name && i.stereotype && i.stereotype.name == "query");
+            if (elem.stereotype && elem.stereotype.name == 'query') {
+                const found = Repository.findAll(i => elem !== i && elem.name === i.name && i.stereotype && i.stereotype.name == "query");
                 return found.length === 0;
             }
             return true;
         }
     },
     {
-        id: "ODA002",
+        id: "ODA00101",
+        message: "query not applicable to this type",
+        appliesTo: ["UMLModelElement"],
+        exceptions: ["UMLOperation"],
+        constraint: function (elem) {
+            if (elem.stereotype && elem.stereotype.name == 'query'){
+                return false;
+            } else {
+                return true;
+            }
+        }
+    },
+    {
+        id: "ODA00200",
         message: "Name of mutation must be unique",
-        appliesTo: ["UMLOperation"],
+        appliesTo: ["UMLModelElement"],
         exceptions: [],
         constraint: function (elem) {
-            if(elem.stereotype.name == 'mutation') {
-                const found = Repository.findAll(i => elem!==i && elem.name === i.elem.name && i.stereotype && i.stereotype.name == "mutation");
+            if (elem.stereotype && elem.stereotype.name == 'mutation') {
+                const found = Repository.findAll(i => elem !== i && elem.name === i.name && i.stereotype && i.stereotype.name == "mutation");
                 return found.length === 0;
             }
             return true;
         }
     },
+    {
+        id: "ODA00201",
+        message: "mutation not applicable to this type",
+        appliesTo: ["UMLModelElement"],
+        exceptions: ["UMLOperation"],
+        constraint: function (elem) {
+            if (elem.stereotype && elem.stereotype.name == 'mutation'){
+                return false;
+            } else {
+                return true;
+            }
+        }
+    },
+    {
+        id: "ODA003",
+        message: "interface must have attributes",
+        appliesTo: ["UMLModelElement"],
+        exceptions: [],
+        constraint: function (elem) {
+            if (elem.stereotype && elem.stereotype.name == 'interface') {
+                return elem.attributes.length > 0
+            }
+            return true;
+        }
+    },
+    {
+        id: "ODA004",
+        message: "union must have no attributes",
+        appliesTo: ["UMLModelElement"],
+        exceptions: [],
+        constraint: function (elem) {
+            if (elem.stereotype && elem.stereotype.name == 'union') {
+                return elem.attributes.length === 0
+            }
+            return true;
+        }
+    },
+    {
+        id: "ODA005",
+        message: "input is only for UMLClass",
+        appliesTo: ['UMLModelElement'],
+        exceptions: ["UMLClass"],
+        constraint: function (elem) {
+            return !elem.stereotype || (elem.stereotype && elem.stereotype.name !== 'input');
+        }
+    },
+    {
+        id: "ODA006",
+        message: "type for attribute must exists in model",
+        appliesTo: ['UMLAttribute'],
+        exceptions: [],
+        constraint: function (elem) {
+            return !elem.type || typeof elem.type !== 'string' || (typeof elem.type === 'string' && Repository.select(elem.type).length > 0);
+        }
+    },
+
     // return value for mutations must be entity/node/payload 
     // associationEnds must have multiplicity
     // navigable not persistend end must be derived in code
-    // типы данных должны быть выбраны из соответствующих профилей
     // схема должна содержать хотя бы одну ссылку на сущность
-    //
-
 ];
 
 Validator.addRules(rules);
@@ -174,19 +249,31 @@ Validator.addRules(rules);
 var failed = Validator.validate();
 console.log(failed);
 //links
-var links = mdjson.Repository.select("@UMLAssociationClassLink");
+var links = Repository.select("@UMLAssociationClassLink");
 //
-var entities = mdjson.Repository.findAll(i => i.stereotype && (i.stereotype.name == "node" || i.stereotype.name == "entity")).map(Entity);
+
+var entities = Repository
+    .findAll(i => i.stereotype && (i.stereotype.name == "node" || i.stereotype.name == "entity"))
+    .map(Entity);
+
 //
-var inputTypes = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "input").map(InputType);;
+var inputTypes = Repository
+    .findAll(i => i.constructor.name === 'UMLClass' && i.stereotype && i.stereotype.name == "input")
+    .map(InputType);
+
+//  
+var payload = Repository
+    .findAll(i => i.stereotype && i.stereotype.name == "payload")
+// .map(InputType);
+
 //
-var schemas = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "schema");
+var schemas = Repository.findAll(i => i.stereotype && i.stereotype.name == "schema");
 //
-var mutations = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "mutation")
+var mutations = Repository.findAll(i => i.stereotype && i.stereotype.name == "mutation")
 //
-var queries = mdjson.Repository.findAll(i => i.stereotype && i.stereotype.name == "query");
+var queries = Repository.findAll(i => i.stereotype && i.stereotype.name == "query");
 //
-var enums = mdjson.Repository.findAll(i => i.stereotype && (i.stereotype.name == "enum" || i.stereotype.name == "enumeration"));
+var enums = Repository.findAll(i => (i.stereotype && i.stereotype.name == "enum") || i.constructor.name === 'UMLEnumeration');
 // UMLOperation
 
 //RULE: все операции и запросы должны быть уникальны по названию во всех моделе
