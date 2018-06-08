@@ -1,1 +1,874 @@
-[{"name":"AdminRole","fields":[{"name":"active","description":"means current role in the system","required":true,"type":"Boolean"},{"name":"multiple","description":"can have multiple roles","type":"RoleType","derived":true},{"name":"startDate","description":"when it is started","required":true,"type":"Date"}]},{"name":"User","fields":[{"name":"userName","identity":true},{"name":"password","required":true},{"name":"login","type":"LoginPayload","args":[{"name":"input","type":"LoginInput"}]},{"name":"registerUser","type":"LoginPayload","args":[{"name":"input","type":"RegisterUserInput"}]},{"name":"currentUser","type":"LoginPayload","args":[]},{"name":"roles","relation":{"belongsToMany":"UserRoles#"}},{"name":"currentRole","derived":true,"relation":{"belongsToMany":"UserRoles#"}}]},{"name":"StudentRole","fields":[{"name":"active","description":"means current role in the system","required":true,"type":"Boolean"},{"name":"multiple","description":"can have multiple roles","type":"RoleType","derived":true},{"name":"startDate","description":"when it is started","required":true,"type":"Date"},{"name":"currentStudent","type":"StudentRole","args":[]}]}]
+[
+    {
+        "name": "Offer",
+        "description": "Offer which brand makes",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of offer",
+                "required": true,
+                "type": "id",
+                "identity": true
+            },
+            {
+                "name": "name",
+                "description": "Name of offer",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "startAt",
+                "description": "Date when offer starts",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "endAt",
+                "description": "Date when offer ends",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "status",
+                "description": "Status of offer. One of determinated string (todo: add statused)\n",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "maxPeopleToBy",
+                "description": "Maximum amount of people who can uy this offer",
+                "required": true,
+                "type": "integer"
+            },
+            {
+                "name": "moneyInfo",
+                "description": "Json which contains cost for one gas unit and currency.",
+                "required": true,
+                "type": "JSON"
+            },
+            {
+                "name": "minGasUnitsToBy",
+                "description": "Minimum amount of gas units which user can buy",
+                "required": true,
+                "type": "double"
+            },
+            {
+                "name": "totalGasUnits",
+                "description": "All gas in offer",
+                "required": true,
+                "type": "double"
+            },
+            {
+                "name": "typeOfGasUnit",
+                "description": "One of string: \"gallons, liters\"",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "description",
+                "description": "Description of offer",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "createdAt",
+                "description": "Date when offer was created",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "updateAt",
+                "description": "Last date when offer was updated",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "deletedDate",
+                "description": "Date when offer was deleted",
+                "type": "date"
+            },
+            {
+                "name": "repeatSettings",
+                "description": "Settings for offer repeating",
+                "type": "JSON"
+            },
+            {
+                "name": "brand",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "Brand#"
+                }
+            },
+            {
+                "name": "gasStation",
+                "description": "Reference to gas station which makes offer. Can be null if offer was created by brand, not by separate station.",
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "GasStation#"
+                }
+            },
+            {
+                "name": "fuelType",
+                "description": "Type of fuel in offer",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "FuelType#"
+                }
+            },
+            {
+                "name": "createdBy",
+                "description": "Reference to backend user who created ofer",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "BackendUser#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "User",
+        "description": "Client user of application",
+        "fields": [
+            {
+                "name": "id",
+                "description": "User id",
+                "required": true,
+                "type": "id",
+                "identity": true
+            },
+            {
+                "name": "userName",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "password",
+                "description": "password for logging",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "phoneNumber",
+                "description": "phone number ",
+                "type": "string"
+            },
+            {
+                "name": "email",
+                "description": "email",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "rating",
+                "description": "rarting of user to know his place in leaderboards list",
+                "type": "integer"
+            },
+            {
+                "name": "firstName",
+                "description": "first name",
+                "type": "string"
+            },
+            {
+                "name": "lastName",
+                "description": "last name",
+                "type": "string"
+            },
+            {
+                "name": "isProfileFilled",
+                "description": "Flag to show if user complited to fill info about yourself in application",
+                "type": "boolean"
+            },
+            {
+                "name": "isAcceptedAgreement",
+                "description": "Flag to show if the user accepts the Privacy Notice and the User Agreement",
+                "type": "boolean"
+            },
+            {
+                "name": "zipcodeHome",
+                "description": "zipcode - unique identifier of place where user home is",
+                "type": "string"
+            },
+            {
+                "name": "registeredAt",
+                "description": "Date when user registered at application",
+                "type": "date"
+            },
+            {
+                "name": "updatedAt",
+                "description": "Last date date when information about user updated",
+                "type": "date"
+            },
+            {
+                "name": "deletedAt",
+                "description": "Date when user account was deleted",
+                "type": "date"
+            },
+            {
+                "name": "lastVisitAt",
+                "description": "last date when you visited at application",
+                "type": "date"
+            },
+            {
+                "name": "zipcodeWork",
+                "description": "zipcode - unique identifier of place where user work is",
+                "type": "string"
+            },
+            {
+                "name": "locationHome",
+                "description": "geographical coordinates of user home\n",
+                "type": "geoJSON"
+            },
+            {
+                "name": "locationWork",
+                "description": "geographical coordinates of user work\n",
+                "type": "geoJSON"
+            },
+            {
+                "name": "resetCode",
+                "description": "code to reset password or email",
+                "type": "string"
+            },
+            {
+                "name": "activationCode",
+                "description": "code to activate application after registration",
+                "type": "string"
+            }
+        ]
+    },
+    {
+        "name": "FuelTypeOfUser",
+        "description": "One of fuel type which user interested in",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id  of fuel type which includes in user favorite fuel list\n",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "fuelType",
+                "description": "Reference to   id   of  fuel type\n",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "FuelType#"
+                }
+            },
+            {
+                "name": "user",
+                "description": "Reference to   id of user\n",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "User#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "BackendUser",
+        "description": "User of admin application.",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of backend user",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "phoneNumber",
+                "description": "phone number ",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "email",
+                "description": "email",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "isSuperUser",
+                "description": "Flag to show if  backed user is admin of system.",
+                "required": true,
+                "type": "boolean"
+            },
+            {
+                "name": "registeredAt",
+                "description": "Date when user registered at application",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "updatedAt",
+                "description": "Last date date when information about user updated",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "deletedAt",
+                "description": "Date when user account was deleted",
+                "type": "date"
+            },
+            {
+                "name": "role",
+                "description": "Reference to role which user has",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "Role#"
+                }
+            },
+            {
+                "name": "workerOfBrand",
+                "description": "Reference to brand where backend user works.",
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "Brand#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "Order",
+        "description": "Order of offer  made by the user",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of order",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "gasInfo",
+                "description": "info aboout gas in offer (JSON with fields \"typeOfGasUnits\" and \"anountOfGasUnits\")\n",
+                "required": true,
+                "type": "JSON"
+            },
+            {
+                "name": "moneyInfo",
+                "description": "Json which contains amount of meney and currency.",
+                "required": true,
+                "type": "JSON"
+            },
+            {
+                "name": "createdAt",
+                "description": "Date when info about order was added at database",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "updatedAt",
+                "description": "Last date when info about order was updated.",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "deletedAt",
+                "description": "Date when info about order was deleted.",
+                "type": "date"
+            },
+            {
+                "name": "offer",
+                "description": "Reference to the offer  from which the order was purchased",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "Offer#"
+                }
+            },
+            {
+                "name": "user",
+                "description": "Reference to user  who did the order",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "User#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "Brand",
+        "description": "Company who owns gas stations",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of brand",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "name",
+                "description": "Name of brand",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "description",
+                "description": "Description of brand",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "logo",
+                "description": "Logo image of brand. (todo: solve if base64 or url)",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "rating",
+                "description": "Rating of brand",
+                "required": true,
+                "type": "integer"
+            },
+            {
+                "name": "createdAt",
+                "description": "Date when brand was created",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "updatedAt",
+                "description": "Last date when brand was updated",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "deletedAt",
+                "description": "Date when brand was deleted",
+                "type": "date"
+            }
+        ]
+    },
+    {
+        "name": "FuelType",
+        "description": "Fuel type. ",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of fuel type\n",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "name",
+                "description": "Name of fuel type. One of: \"Regular\", \"Middle\",  Premium\"",
+                "required": true,
+                "type": "string",
+                "identity": true
+            }
+        ]
+    },
+    {
+        "name": "GasStation",
+        "description": "Gas station which sells gas.",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of gas station",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "name",
+                "description": "Name of gas station",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "address",
+                "description": "Address of gas station (street, house)",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "city",
+                "description": "Name of city where gas station is located",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "state",
+                "description": "Name of state where gas station is located",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "country",
+                "description": "Name of countrey where gas station is located",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "zipcode",
+                "description": "Zipcode of place where gas station is located.",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "location",
+                "description": "Longtitude and lattitude of place where gas station is located",
+                "required": true,
+                "type": "geoJSON"
+            },
+            {
+                "name": "countOfPumps",
+                "description": "Count if pumps at gas station",
+                "required": true,
+                "type": "integer"
+            },
+            {
+                "name": "brand",
+                "description": "Reference to brand who owns gas station",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "Brand#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "CarType",
+        "description": "Id of car type",
+        "fields": [
+            {
+                "name": "id",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "name",
+                "description": "Name of car type",
+                "required": true,
+                "type": "string"
+            }
+        ]
+    },
+    {
+        "name": "Role",
+        "description": "Role which determines permissions of backend user",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of role",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "name",
+                "description": "Name of role",
+                "required": true,
+                "type": "string",
+                "identity": true
+            }
+        ]
+    },
+    {
+        "name": "Permission",
+        "description": "Permisson which describes backend user access to some entity of data.",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of permission",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "entity",
+                "description": "One of applications table names.",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "canCreate",
+                "description": "Flag to show if backend user can make create-type  operations with table.",
+                "required": true,
+                "type": "boolean"
+            },
+            {
+                "name": "canRead",
+                "description": "Flag to show if backend user can make read-type  operations with table.",
+                "required": true,
+                "type": "boolean"
+            },
+            {
+                "name": "canUpdate",
+                "description": "Flag to show if backend user can make update-type  operations with table.",
+                "required": true,
+                "type": "boolean"
+            },
+            {
+                "name": "canDelete",
+                "description": "Flag to show if backend user can make delete-type  operations with table.",
+                "required": true,
+                "type": "boolean"
+            }
+        ]
+    },
+    {
+        "name": "PermissionOfRole",
+        "description": "Permission which some role has.",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of  permission of  role.",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "role",
+                "description": "Reference to role.",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "Role#"
+                }
+            },
+            {
+                "name": "permission",
+                "description": "Reference to permission",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "Permission#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "FamilyMember",
+        "description": "Family member of user - one of other users",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of user\n",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "user",
+                "description": "Reference to user ",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "User#"
+                }
+            },
+            {
+                "name": "alias",
+                "description": "Some alias for family member",
+                "required": true,
+                "type": "string",
+                "identity": true
+            }
+        ]
+    },
+    {
+        "name": "FavoriteGasStationOfUser",
+        "description": "One of favorite  stations for user",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Identifier  of gas station which includes in user favorite gas sattions  list\n",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "gasStation",
+                "description": "Reference to   id  of gas station",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "GasStation#"
+                }
+            },
+            {
+                "name": "user",
+                "description": "Reference to id of user",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "User#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "FuelTypesOfGasStation",
+        "description": "Fuel type which sells gas station",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of fuel type which gas station sells",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "moneyInfo",
+                "description": "Json which contains amount of meney and currency.",
+                "required": true,
+                "type": "JSON"
+            },
+            {
+                "name": "fuelType",
+                "description": "Reference to fuel type.",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "FuelType#"
+                }
+            },
+            {
+                "name": "gasStation",
+                "description": "Reference to gas station.",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "GasStation#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "Transaction",
+        "description": "Transaction - object where info about money and gas transfering is saved.",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of transaction",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "date",
+                "description": "Date when transaction was completed",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "transactionType",
+                "description": "Type of transaction. One of \"decrement, increment\"",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "createdAt",
+                "description": "Date when info about transaction was added at database",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "updatedAt",
+                "description": "Last date when info about transaction was updated.",
+                "required": true,
+                "type": "date"
+            },
+            {
+                "name": "location",
+                "description": "Longtitude and lattitude of place where transaction was happend",
+                "type": "geoJSON"
+            },
+            {
+                "name": "deletedAt",
+                "description": "Date when info about transaction was deleted.",
+                "type": "date"
+            },
+            {
+                "name": "gasInfo",
+                "description": "info aboout gas in transaction (JSON with fields \"typeOfGasUnits\" and \"anountOfGasUnits\")\n",
+                "type": "JSON"
+            },
+            {
+                "name": "moneyInfo",
+                "description": "Json which contains amount of meney and currency.",
+                "type": "JSON"
+            },
+            {
+                "name": "order",
+                "description": "Reference to id  of  order  in which transaction happens.",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "Order#"
+                }
+            },
+            {
+                "name": "user",
+                "description": "Reference to id  of  user  who owns the transaction",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "User#"
+                }
+            }
+        ]
+    },
+    {
+        "name": "Car",
+        "description": "Some car of user.",
+        "fields": [
+            {
+                "name": "id",
+                "description": "Id of car",
+                "required": true,
+                "type": "id"
+            },
+            {
+                "name": "name",
+                "description": "Name of car",
+                "required": true,
+                "type": "string",
+                "identity": true
+            },
+            {
+                "name": "fabricator",
+                "description": "Brand of car",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "name": "carType",
+                "description": "Reference to type of car",
+                "required": true,
+                "type": "id",
+                "indexed": true,
+                "relation": {
+                    "belongsTo": "CarType#"
+                }
+            }
+        ]
+    }
+]

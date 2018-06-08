@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "fte.js": "^0.6.0",
-    "metadata-json-oda": "latest"
+    "inflect": "^0.4.0",
+    "metadata-json-oda": "latest",
+    "pluralize": "^7.0.0"
   }
 }
