@@ -1,12 +1,17 @@
 var fs = require('fs');
+var stringify = require("json-stringify-pretty-compact")
+
+const Factory = require('fte.js').Factory;
+const raw = new Factory({
+    root: 'templates',
+    debug: true,
+})
 
 var mdjson = require("metadata-json-oda");
 
 const { Validator, Repository } = mdjson;
 
-var root = mdjson.loadFromFile("courseware.mdj");
-
-
+mdjson.loadFromFile("dbDemo.mdj");
 
 function extractTypeName(type) {
     return typeof type === 'string' ?
@@ -162,7 +167,7 @@ const rules = [
         appliesTo: ["UMLModelElement"],
         exceptions: ["UMLOperation"],
         constraint: function (elem) {
-            if (elem.stereotype && elem.stereotype.name == 'query'){
+            if (elem.stereotype && elem.stereotype.name == 'query') {
                 return false;
             } else {
                 return true;
@@ -188,7 +193,7 @@ const rules = [
         appliesTo: ["UMLModelElement"],
         exceptions: ["UMLOperation"],
         constraint: function (elem) {
-            if (elem.stereotype && elem.stereotype.name == 'mutation'){
+            if (elem.stereotype && elem.stereotype.name == 'mutation') {
                 return false;
             } else {
                 return true;
@@ -197,11 +202,11 @@ const rules = [
     },
     {
         id: "ODA003",
-        message: "interface must have attributes",
+        message: "mixin must have attributes",
         appliesTo: ["UMLModelElement"],
         exceptions: [],
         constraint: function (elem) {
-            if (elem.stereotype && elem.stereotype.name == 'interface') {
+            if (elem.stereotype && elem.stereotype.name == 'mixin') {
                 return elem.attributes.length > 0
             }
             return true;
@@ -294,7 +299,7 @@ var enums = Repository.findAll(i => (i.stereotype && i.stereotype.name == "enum"
 },
 */
 
-debugger;
-fs.writeFileSync('./sample.model.json', JSON.stringify(entities));
-// fs.writeFileSync('./sample.packages.json', JSON.stringify(code.map(ent => Entity(ent))));
+
+
+fs.writeFileSync('./entities.ts', raw.run(stringify(entities, { margins: true, indent: 2 }), 'schema.njs'));
 
