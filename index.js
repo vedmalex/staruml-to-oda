@@ -60,28 +60,31 @@ function Relation(opposite) {
         var opp = multiplicity(opposite);
 
         var verb;
+        var refkey='';
         var using;
-
+        debugger;
         if (opp == own && own == 'one') {
             if (attr.aggregation === 'composite' || attr.aggregation === 'shared') {
-                verb = 'belonngsTo';
+                verb = 'belongsTo';
             } else {
                 verb = 'hasOne';
+                refkey = opposite.name;
             }
         } else if (opp == own && own == 'many') {
             verb = 'belongsToMany';
             var assoc = links.find(l => {
                 return l.associationSide === attr._parent;
             });
-            using = assoc ? assoc.classSide.name : undefined;
+            using = assoc ? `${assoc.classSide.name}#` : undefined;
         } else {
             verb = own === 'one' ? 'belongsTo' : 'hasMany';
+            refkey = own === 'one' ? '' : opposite.name;
         }
 
         return {
             ...Field(attr),
             relation: {
-                [verb]: `${attr.reference.name}#`,
+                [verb]: `${attr.reference.name}#${refkey}`,
                 using,
             }
         }

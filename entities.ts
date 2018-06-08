@@ -11,8 +11,8 @@ export default [
        { "name": "location", "required": true },
        { "name": "countOfPumps", "required": true },
        { "name": "company", "relation": { "belongsTo": "Company#" } },
-       { "name": "orders", "relation": { "hasMany": "Order#" } },
-       { "name": "offers", "relation": { "hasMany": "Offer#" } }
+       { "name": "orders", "relation": { "hasMany": "Order#gasStation" } },
+       { "name": "offers", "relation": { "hasMany": "Offer#gasStation" } }
      ]
    },
    {
@@ -23,10 +23,10 @@ export default [
          "name": "customer",
          "relation": {
            "belongsToMany": "Customer#",
-           "using": "FavoriteUserFuelType"
+           "using": "FavoriteUserFuelType#"
          }
        },
-       { "name": "offers", "relation": { "hasMany": "Offer#" } }
+       { "name": "offers", "relation": { "hasMany": "Offer#fuelType" } }
      ]
    },
    {
@@ -39,7 +39,7 @@ export default [
        { "name": "createdAt", "type": "Date" },
        { "name": "updatedAt", "type": "Date" },
        { "name": "deletedAt", "type": "Date" },
-       { "name": "stations", "relation": { "hasMany": "GasStation#" } }
+       { "name": "stations", "relation": { "hasMany": "GasStation#company" } }
      ]
    },
    {
@@ -62,7 +62,7 @@ export default [
        { "name": "deletedAt", "type": "Date" },
        { "name": "repeatSettings", "type": "Date" },
        { "name": "gasStation", "relation": { "belongsTo": "GasStation#" } },
-       { "name": "orders", "relation": { "hasMany": "Order#" } },
+       { "name": "orders", "relation": { "hasMany": "Order#offer" } },
        { "name": "fuelType", "relation": { "belongsTo": "FuelType#" } }
      ]
    },
@@ -79,7 +79,10 @@ export default [
        { "name": "deletedAt", "type": "Date" },
        { "name": "gasStation", "relation": { "belongsTo": "GasStation#" } },
        { "name": "offer", "relation": { "belongsTo": "Offer#" } },
-       { "name": "transactions", "relation": { "hasMany": "Transaction#" } },
+       {
+         "name": "transactions",
+         "relation": { "hasMany": "Transaction#order" }
+       },
        { "name": "customer", "relation": { "belongsTo": "Customer#" } }
      ]
    },
@@ -96,10 +99,16 @@ export default [
        { "name": "updatedAt", "type": "Date" },
        { "name": "deletedAt", "type": "Date" },
        { "name": "order", "relation": { "belongsTo": "Order#" } },
-       { "name": "customer", "relation": { "hasOne": "Customer#" } }
+       { "name": "customer", "relation": { "hasOne": "Customer#transactions" } }
      ]
    },
-   { "name": "FavoriteUserFuelType", "fields": [  ] },
+   {
+     "name": "FavoriteUserFuelType",
+     "fields": [
+       { "name": "fuelType", "type": "ID" },
+       { "name": "customer", "type": "ID" }
+     ]
+   },
    {
      "name": "Customer",
      "fields": [
@@ -125,12 +134,15 @@ export default [
          "name": "favoriteFuleTypes",
          "relation": {
            "belongsToMany": "FuelType#",
-           "using": "FavoriteUserFuelType"
+           "using": "FavoriteUserFuelType#"
          }
        },
-       { "name": "orders", "relation": { "hasMany": "Order#" } },
-       { "name": "transactions", "relation": { "hasOne": "Transaction#" } },
-       { "name": "credential", "relation": { "belonngsTo": "User#" } }
+       { "name": "orders", "relation": { "hasMany": "Order#customer" } },
+       {
+         "name": "transactions",
+         "relation": { "hasOne": "Transaction#customer" }
+       },
+       { "name": "credential", "relation": { "belongsTo": "User#" } }
      ]
    },
    {
@@ -142,7 +154,7 @@ export default [
        { "name": "isSystem", "type": "Boolean" },
        { "name": "enabled", "type": "Boolean" },
        { "name": "isCustomer", "type": "Boolean" },
-       { "name": "customer", "relation": { "hasOne": "Customer#" } }
+       { "name": "customer", "relation": { "hasOne": "Customer#credential" } }
      ]
    }
  ]
