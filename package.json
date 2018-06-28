@@ -11,6 +11,7 @@
   "dependencies": {
     "fte.js": "^0.6.0",
     "inflect": "^0.4.0",
+    "inflected": "^2.0.4",
     "json-stringify-pretty-compact": "^1.2.0",
     "metadata-json-oda": "latest",
     "pluralize": "^7.0.0"

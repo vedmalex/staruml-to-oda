@@ -1,5 +1,6 @@
 var fs = require('fs');
 var stringify = require('json-stringify-pretty-compact');
+var Inflector = require('inflected');
 
 const Factory = require('fte.js').Factory;
 const raw = new Factory({
@@ -68,7 +69,6 @@ function Relation(opposite) {
     var verb;
     var refkey = '';
     var using;
-    debugger;
     if (opp == own && own == 'one') {
       if (attr.aggregation === 'composite' || attr.aggregation === 'shared') {
         verb = 'belongsTo';
@@ -77,11 +77,14 @@ function Relation(opposite) {
         refkey = opposite.name;
       }
     } else if (opp == own && own == 'many') {
+      debugger;
       verb = 'belongsToMany';
       var assoc = links.find(l => {
         return l.associationSide === attr._parent;
       });
-      using = assoc ? `${assoc.classSide.name}#` : undefined;
+      using = assoc
+        ? `${assoc.classSide.name}#${Inflector.singularize(attr.name)}`
+        : undefined;
     } else {
       verb = own === 'one' ? 'belongsTo' : 'hasMany';
       refkey = own === 'one' ? '' : opposite.name;
@@ -98,7 +101,11 @@ function Relation(opposite) {
 }
 
 function Relations(elem) {
-  return [...elem.getAssociationEnds().map(Relation)].filter(r => r);
+  const ends = [
+    ...elem.getAssociationEnds(),
+    ...elem.getAssociationEnds(true),
+  ].filter(e => e.reference == elem);
+  return [...ends.map(Relation)].filter(r => r);
 }
 
 function Field(attr) {
